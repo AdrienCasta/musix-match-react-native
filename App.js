@@ -11,20 +11,22 @@
 
 */
 
-import React from 'react';
-import { Platform, StatusBar, Image } from 'react-native';
-import { AppLoading, Asset } from 'expo';
-import { Block, GalioProvider } from 'galio-framework';
+import React from "react";
+import { Provider } from "react-redux";
+import store from "./redux";
+import { Platform, StatusBar, Image } from "react-native";
+import { AppLoading, Asset } from "expo";
+import { Block, GalioProvider } from "galio-framework";
 
-import Screens from './navigation/Screens';
-import { Images, products, materialTheme } from './constants/';
+import Screens from "./navigation/Screens";
+import { Images, products, materialTheme } from "./constants/";
 
 // cache app images
 const assetImages = [
   Images.Pro,
   Images.Profile,
   Images.Avatar,
-  Images.Onboarding,
+  Images.Onboarding
 ];
 
 // cache product images
@@ -32,7 +34,7 @@ products.map(product => assetImages.push(product.image));
 
 function cacheImages(images) {
   return images.map(image => {
-    if (typeof image === 'string') {
+    if (typeof image === "string") {
       return Image.prefetch(image);
     } else {
       return Asset.fromModule(image).downloadAsync();
@@ -42,7 +44,7 @@ function cacheImages(images) {
 
 export default class App extends React.Component {
   state = {
-    isLoadingComplete: false,
+    isLoadingComplete: true
   };
 
   render() {
@@ -56,20 +58,20 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <GalioProvider theme={materialTheme}>
-          <Block flex>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <Screens />
-          </Block>
-        </GalioProvider>
+        <Provider store={store}>
+          <GalioProvider theme={materialTheme}>
+            <Block flex>
+              {Platform.OS === "ios" && <StatusBar barStyle="default" />}
+              <Screens />
+            </Block>
+          </GalioProvider>
+        </Provider>
       );
     }
   }
 
   _loadResourcesAsync = async () => {
-    return Promise.all([
-      ...cacheImages(assetImages),
-    ]);
+    return Promise.all([...cacheImages(assetImages)]);
   };
 
   _handleLoadingError = error => {
