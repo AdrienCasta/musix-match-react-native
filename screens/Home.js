@@ -6,9 +6,11 @@ import {
   ScrollView,
   FlatList,
   Linking,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
-import { Button, Block, Text, Input, theme, Card } from "galio-framework";
+import materialTheme from "../constants/Theme";
+import { Block, theme, Card } from "galio-framework";
 
 import { Icon, Product } from "../components/";
 
@@ -26,71 +28,6 @@ class Home extends React.Component {
     }
   }
 
-  renderSearch = () => {
-    const { navigation } = this.props;
-    const iconCamera = (
-      <Icon
-        size={30}
-        color={theme.COLORS.MUTED}
-        name="camera-18"
-        family="GalioExtra"
-      />
-    );
-
-    return (
-      <Input
-        right
-        color="black"
-        style={styles.search}
-        iconContent={iconCamera}
-        placeholder="test"
-        onFocus={() => alert("Pro")}
-      />
-    );
-  };
-
-  renderTabs = () => {
-    const { navigation } = this.props;
-
-    return (
-      <Block row style={styles.tabs}>
-        <Button
-          shadowless
-          style={[styles.tab, styles.divider]}
-          onPress={() => navigation.navigate("Pro")}
-        >
-          <Block row middle>
-            <Icon
-              name="grid-square"
-              family="Galio"
-              style={{ paddingRight: 8 }}
-            />
-            <Text size={16} style={styles.tabTitle}>
-              Categories jifozjhfoiq
-            </Text>
-          </Block>
-        </Button>
-        <Button
-          shadowless
-          style={styles.tab}
-          onPress={() => navigation.navigate("Pro")}
-        >
-          <Block row middle>
-            <Icon
-              size={16}
-              name="camera-18"
-              family="GalioExtra"
-              style={{ paddingRight: 8 }}
-            />
-            <Text size={16} style={styles.tabTitle}>
-              Best Deals
-            </Text>
-          </Block>
-        </Button>
-      </Block>
-    );
-  };
-
   _handleCardPress = artistId => {
     const { loadDiscography, navigation } = this.props;
     loadDiscography(artistId);
@@ -98,6 +35,9 @@ class Home extends React.Component {
   };
 
   rendertwitterIcon = artistTwitteUrl => {
+    if (artistTwitteUrl === "") {
+      return null;
+    }
     const handlePress = () => {
       Linking.canOpenURL(artistTwitteUrl).then(supported => {
         if (supported) {
@@ -126,8 +66,7 @@ class Home extends React.Component {
         <Card
           title={artist_name}
           fullBackgroundImage
-          image="https://images.unsplash.com/photo-1536567893079-f54abdc73dc2?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e6a56a131b11a6366446c42381192329&auto=format&fit=crop&w=1350&q=80"
-          authorImageSrc="http://i.pravatar.cc/100"
+          image={`https://picsum.photos/200/300?random=${artist_id}`}
           location={this.rendertwitterIcon(artist_twitter_url)}
           caption={artist_country}
           authorSubTitle="420 minutes ago"
@@ -160,7 +99,10 @@ class Home extends React.Component {
     return (
       <Block flex center style={styles.home}>
         {artists.fetching ? (
-          <Text>loading</Text>
+          <ActivityIndicator
+            size="large"
+            color={materialTheme.COLORS.BORDER_COLOR}
+          />
         ) : (
           this.renderArtists(artists.data)
         )}

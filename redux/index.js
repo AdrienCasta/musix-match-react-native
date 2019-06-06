@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import createSagaMiddleware from "redux-saga";
 import artistsReducer from "./artistsRedux";
+import userReducer from "./userRedux";
 
 import sagas from "../sagas";
 
@@ -8,7 +9,7 @@ import sagas from "../sagas";
 const sagaMiddleware = createSagaMiddleware();
 // mount it on the Store
 const store = createStore(
-  combineReducers({ artists: artistsReducer }),
+  combineReducers({ artists: artistsReducer, user: userReducer }),
   applyMiddleware(sagaMiddleware)
 );
 

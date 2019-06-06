@@ -1,21 +1,56 @@
 import React from "react";
+import { connect } from "react-redux";
 import {
   ImageBackground,
   StyleSheet,
   StatusBar,
   Dimensions,
-  Platform
+  ActivityIndicator
 } from "react-native";
-import { Block, Button, Text, theme } from "galio-framework";
+import { Block, Button, Text, theme, Input } from "galio-framework";
+
+import {
+  ActionCreators as UserActionCreator,
+  Selectors as UserSelectors
+} from "../redux/userRedux";
 
 const { height, width } = Dimensions.get("screen");
 
 import materialTheme from "../constants/Theme";
 import Images from "../constants/Images";
 
-export default class Onboarding extends React.Component {
+class Onboarding extends React.Component {
+  state = {
+    username: "",
+    password: ""
+  };
+
+  static getDerivedStateFromProps({ login, navigation }) {
+    if (login.data) {
+      navigation.navigate("Home");
+    }
+    return null;
+  }
+
+  _handlePasswordChange = password => {
+    this.setState({
+      password
+    });
+  };
+  _handleUsernameChange = username => {
+    this.setState({
+      username
+    });
+  };
+  _handleSubmit = () => {
+    const { username, password } = this.state;
+    const { authenticate } = this.props;
+    authenticate({ username, password });
+  };
   render() {
-    const { navigation } = this.props;
+    const {
+      login: { fetching }
+    } = this.props;
 
     return (
       <Block flex style={styles.container}>
@@ -35,27 +70,35 @@ export default class Onboarding extends React.Component {
           <Block flex space="around" style={{ zIndex: 2 }}>
             <Block>
               <Block>
-                <Text color="white" size={60}>
-                  Material
-                </Text>
+                <Input
+                  onChangeText={this._handleUsernameChange}
+                  color="#444"
+                  rounded
+                  placeholder="Username"
+                  label="Username"
+                />
               </Block>
               <Block row>
-                <Text color="white" size={60}>
-                  Kit
-                </Text>
+                <Input
+                  onChangeText={this._handlePasswordChange}
+                  rounded
+                  placeholder="Password"
+                  color="#444"
+                  password
+                  label="Password"
+                  viewPass
+                />
               </Block>
-              <Text size={16} color="rgba(255,255,255,0.6)">
-                Fully coded React Native components.
-              </Text>
             </Block>
             <Block center>
               <Button
                 shadowless
+                loading={fetching}
                 style={styles.button}
                 color={materialTheme.COLORS.BUTTON_COLOR}
-                onPress={() => navigation.navigate("Home")}
+                onPress={this._handleSubmit}
               >
-                Login
+                <Text style={styles.buttonText}>Submit </Text>
               </Button>
             </Block>
           </Block>
@@ -64,6 +107,22 @@ export default class Onboarding extends React.Component {
     );
   }
 }
+
+const mapDispatchToProps = dispatch => ({
+  authenticate: credential =>
+    dispatch(UserActionCreator.userLoginRequest(credential))
+});
+
+const mapStateToProps = state => {
+  return {
+    login: UserSelectors.getUserLogin(state)
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Onboarding);
 
 const styles = StyleSheet.create({
   container: {
@@ -79,5 +138,8 @@ const styles = StyleSheet.create({
     height: theme.SIZES.BASE * 3,
     shadowRadius: 0,
     shadowOpacity: 0
+  },
+  buttonText: {
+    color: "#fff"
   }
 });

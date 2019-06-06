@@ -4,6 +4,12 @@ import axios from "axios";
 const API_KEY = "e595a1734e95171b8e1c87efbf0f9d96";
 
 const create = (baseURL = "https://api.musixmatch.com/ws/1.1/") => {
+  const login = (username, password) => {
+    return axios.post(endoints.login, {
+      username,
+      password
+    });
+  };
   const getArtists = () => {
     return axios.get(`${baseURL}${endoints.musixMatch.topArtists}`, {
       params: {
@@ -28,7 +34,8 @@ const create = (baseURL = "https://api.musixmatch.com/ws/1.1/") => {
 
   return {
     getArtists,
-    getDiscography
+    getDiscography,
+    login
   };
 };
 
