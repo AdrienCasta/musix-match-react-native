@@ -3,7 +3,7 @@ const endoints = {
     topArtists: "chart.artists.get",
     discography: "artist.albums.get"
   },
-  login: "https://server.adriencastagliola.now.sh"
+  login: "https://matierenoire-authentification.adriencastagliola.now.sh/"
 };
 
 export default endoints;
